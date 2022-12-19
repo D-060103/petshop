@@ -44,6 +44,9 @@
         <li class="nav-item">
           <a class="nav-link" href="https://wa.me/6281262333558">Contact</a>
         </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/product_create">Create Product</router-link>
+        </li>
 
       </ul>
       <!-- Left links -->
@@ -96,20 +99,26 @@
     <div class="container-fluid mx-5 my-5">
       <h3 class="side-title">Product</h3>
       <div class="row">
-        <div class="col">
+        <div class="col" v-for="product in products" :key="product.id">
           <div class="card" style="width: 18rem; background: #F1F1F1;">
             <img class="card-img-top" src="src/assets/tempat tdr.png" width="150">
             <div class="card-body">
-              <h5 class="card-title">Tempat tidur kucing</h5>
-              <p class="card-text">Rp80.000</p>
+              <h5 class="card-title">{{product.nama}}</h5>
+              <p class="card-text">Rp{{product.harga}}</p>
               <a href="../TempatTDR" class="btn btn-primary">Buy</a>
               <a class="text-reset mx-5 mt-5" href="../Wishlist">
                 <i class="like btn btn-default btn-danger" style="background: #;" type="button"><span class="fa fa-heart"></span></i>
               </a>
+              <button @click="
+                          $router.push({ 
+                          name: 'product_edit', 
+                          params: { id: product.id } 
+                          })">Edit Product</button>
+              <button @click="deleteProduct(product.id)">Delete</button>
             </div>  
           </div>
         </div>
-        <div class="col">
+        <!-- <div class="col">
           <div class="card" style="width: 18rem; background: #F1F1F1;">
             <img class="card-img-top" src="src/assets/obat kucing.png" width="150">
             <div class="card-body">
@@ -134,7 +143,7 @@
               </a>
             </div>  
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     </div>
@@ -147,66 +156,42 @@
 <script>
   // import { v4 as uuidv4 } from 'uuid'
   import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore'
-  import db from "../firebase";
+  import db from "../firebase/firebase";
   
   export default {
   data() {
     return {
-      todos: []
+      products: []
     };
   },
   mounted() {
-    this.getTodos2();
+    this.getproducts2();
   },
   methods: {
-    async getTodos1() {
-      const querySnapshot = await getDocs(collection(db, "todos"));
-      if (querySnapshot) {
+    getproducts2() {
+      onSnapshot(collection(db, "products"), (querySnapshot) => {
+        this.products = [];
         querySnapshot.forEach((doc) => {
-          this.todos.push({ id: doc.id, ...doc.data() });
-        });
-      } else {
-        console.log("No todos found");
-      }
-    },
-    getTodos2() {
-      // getDocs(collection(db, "todos")).then((querySnapshot) => {
-      //   querySnapshot.forEach((doc) => {
-      //     this.todos.push({ id: doc.id, ...doc.data() });
-      //   });
-      // });
-      onSnapshot(collection(db, "todos"), (querySnapshot) => {
-        // const fbTodos = [];
-        this.todos = [];
-        querySnapshot.forEach((doc) => {
-          const tods ={
+          const prods ={
             id: doc.id,
-            content: doc.data().content,
-            done: doc.data().done,
-            cat: doc.data().cat
+            nama: doc.data().nama,
+            deskripsi: doc.data().deskripsi,
+            harga: doc.data().harga
           }
           
-          // this.todos.push({ id: doc.id, ...doc.data() });
-          this.todos.push(tods);
-          // fbTodos.push(this.todos)
+          // this.products.push({ id: doc.id, ...doc.data() });
+          this.products.push(prods);
+          // fbproducts.push(this.products)
         });
-        // this.todos.value = fbTodos
+        // this.products.value = fbproducts
       });
-      console.log(this.todos);
+      console.log(this.products);
     },
 
-    deleteTodo(todoID) {
-      deleteDoc(doc(collection(db, "todos"), todoID));
-      console.log('deleteTodo:', todoID)
+    deleteProduct(productID) {
+      deleteDoc(doc(collection(db, "products"), productID));
+      console.log('deleteproduct:', productID)
     },
-    toggleDone(todoID){
-      const index = this.todos.findIndex(todo => todo.id === todoID)
-      // todos.value[index].done = !todos.value[index].done;
-      updateDoc(doc(collection(db, "todos"), todoID), {
-        done: !this.todos[index].done
-      })
-      console.log('index: ', index)
-    }
   },
 };
 </script>

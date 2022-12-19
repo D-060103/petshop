@@ -13,7 +13,7 @@ import TaganjingView from "../views/TaganjingView.vue";
 import MangkukView from "../views/MangkukView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
-import product_edit from "..views/product_edit.vue";
+import product_edit from "../components/product_edit.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -136,8 +136,13 @@ const router = createRouter({
     component: RegisterView,
   },
   {
-    path: "/product_edit",
+    path: "/product_edit/:id",
     name: "produt_edit",
+    component: product_edit,
+  },
+  {
+    path: "/product_create",
+    name: "produt_create",
     component: product_edit,
   }
   ],
